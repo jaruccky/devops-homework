@@ -1,0 +1,11 @@
+.venv/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+terraform.tfvars
+.env
+*.retry
+__pycache__/
+*.pem
+id_*
