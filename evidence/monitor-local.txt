@@ -1,0 +1,6 @@
+Command: ./scripts/monitor.sh docker
+Context: local host, actual output from execution outside the sandbox on 2026-10-12.
+Exit code: 0
+
+Service docker: active
+Errors in /var/log/syslog during the last hour: 4

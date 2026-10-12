@@ -1,0 +1,7 @@
+docker_host = "ssh://deployer@111.88.162.109:22"
+server_ip   = "111.88.162.109"
+http_port   = 8080
+# Для проверки на локальном Docker-хосте:
+# docker_host = "unix:///var/run/docker.sock"
+# server_ip   = "127.0.0.1"
+# bind_ip     = "127.0.0.1"

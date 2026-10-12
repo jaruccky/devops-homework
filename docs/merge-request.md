@@ -1,0 +1,7 @@
+Создаёт базовую инфраструктуру ДЗ №1 с учётом уточнения преподавателя: Ansible сначала готовит выданный Ubuntu-хост, затем Terraform Docker создаёт nginx на порту 8080 с отдельной сетью и томом. Docker Compose запускает reverse proxy на порту 80 и приложение Hello World в другой сети.
+
+Добавлены пользователь deployer с ключевым SSH-доступом, Docker Engine/Compose, автозапуск, Bash-мониторинг, инструкции и скрипт сбора результатов. Скрипт развёртывания требует changed=0 во втором Ansible recap, проверяет HTTP, сети, том и пустой повторный Terraform plan.
+
+Проверки: синтаксис обоих Ansible playbook, Compose config, Bash syntax, HCL parse и 10 тестов мониторинга. Локальный monitor.sh docker выполнен успешно.
+
+Удалённое развёртывание пока не подтверждено: SSH 111.88.162.109:22 недоступен. Terraform validate/apply также не запускались из-за недоступности загрузки бинарника. Перед окончательной сдачей нужны фактические логи Ansible, Terraform, Compose и curl, которые сохранит scripts/deploy.sh. Само-ревью — docs/self-review.md.

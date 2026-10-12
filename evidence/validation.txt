@@ -1,0 +1,28 @@
+
+playbook: setup_host.yml
+
+playbook: deploy_app.yml
+@all:
+  |--@ungrouped:
+  |--@devops:
+  |  |--homework
+test_inactive_shows_journal (test_monitor.MonitorTest.test_inactive_shows_journal) ... ok
+test_journal_failure (test_monitor.MonitorTest.test_journal_failure) ... ok
+test_journal_unavailable_is_not_zero_errors (test_monitor.MonitorTest.test_journal_unavailable_is_not_zero_errors) ... ok
+test_no_errors (test_monitor.MonitorTest.test_no_errors) ... ok
+test_no_syslog_falls_back_to_journal (test_monitor.MonitorTest.test_no_syslog_falls_back_to_journal) ... ok
+test_rfc3164_new_year_and_time_window (test_monitor.MonitorTest.test_rfc3164_new_year_and_time_window) ... ok
+test_rfc3339_offsets_and_fractional_seconds (test_monitor.MonitorTest.test_rfc3339_offsets_and_fractional_seconds) ... ok
+test_systemd_unavailable (test_monitor.MonitorTest.test_systemd_unavailable) ... ok
+test_unknown_service (test_monitor.MonitorTest.test_unknown_service) ... ok
+test_usage_and_invalid_service (test_monitor.MonitorTest.test_usage_and_invalid_service) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.134s
+
+OK
+HCL syntax OK: terraform/main.tf
+HCL syntax OK: terraform/outputs.tf
+HCL syntax OK: terraform/variables.tf
+HCL syntax OK: terraform/versions.tf
+NOT RUN: Terraform fmt/init/validate (binary not installed). HCL parsing only.

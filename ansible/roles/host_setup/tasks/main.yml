@@ -1,0 +1,125 @@
+---
+- name: Check supported operating system
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.distribution == 'Ubuntu'
+      - ansible_facts.distribution_version is version('22.04', '>=')
+    fail_msg: "This role requires Ubuntu 22.04 or newer."
+
+- name: Read controller SSH public key
+  ansible.builtin.set_fact:
+    deployer_public_key: "{{ lookup('file', deployer_public_key_file) | trim }}"
+
+- name: Require an SSH public key
+  ansible.builtin.assert:
+    that:
+      - deployer_public_key is match('^(ssh-ed25519|ssh-rsa|ecdsa-sha2-)')
+    fail_msg: "Set deployer_public_key_file to your SSH public key."
+
+- name: Install repository prerequisites and monitoring tools
+  ansible.builtin.apt:
+    name: [ca-certificates, curl, sudo, rsyslog]
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Create apt key directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Install the Docker repository signing key
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+
+- name: Get Debian architecture
+  ansible.builtin.command: dpkg --print-architecture
+  register: docker_arch
+  changed_when: false
+
+- name: Configure the official Docker apt repository
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/docker.sources
+    mode: '0644'
+    content: |
+      Types: deb
+      URIs: https://download.docker.com/linux/ubuntu
+      Suites: {{ ansible_facts.distribution_release }}
+      Components: stable
+      Architectures: {{ docker_arch.stdout }}
+      Signed-By: /etc/apt/keyrings/docker.asc
+  register: docker_repository
+
+- name: Install Docker Engine and Compose plugin
+  ansible.builtin.apt:
+    name: [docker-ce, docker-ce-cli, containerd.io, docker-buildx-plugin, docker-compose-plugin]
+    state: present
+    update_cache: "{{ docker_repository.changed }}"
+
+- name: Enable and start Docker
+  ansible.builtin.systemd_service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Enable and start syslog
+  ansible.builtin.systemd_service:
+    name: rsyslog
+    state: started
+    enabled: true
+
+- name: Create deployer with a locked password
+  ansible.builtin.user:
+    name: "{{ deployer_user }}"
+    shell: /bin/bash
+    groups: [sudo, docker]
+    append: true
+    create_home: true
+    password_lock: true
+
+- name: Configure passwordless sudo for deployer
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ deployer_user }}"
+    content: "{{ deployer_user }} ALL=(ALL:ALL) NOPASSWD:ALL\n"
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Create deployer SSH directory
+  ansible.builtin.file:
+    path: "/home/{{ deployer_user }}/.ssh"
+    state: directory
+    owner: "{{ deployer_user }}"
+    group: "{{ deployer_user }}"
+    mode: '0700'
+
+- name: Authorize the controller SSH key
+  ansible.builtin.lineinfile:
+    path: "/home/{{ deployer_user }}/.ssh/authorized_keys"
+    line: "{{ deployer_public_key }}"
+    create: true
+    owner: "{{ deployer_user }}"
+    group: "{{ deployer_user }}"
+    mode: '0600'
+
+- name: Enforce key authentication for deployer
+  ansible.builtin.blockinfile:
+    path: /etc/ssh/sshd_config
+    marker: "# {mark} ANSIBLE DEPLOYER KEY AUTH"
+    insertafter: EOF
+    block: |
+      Match User {{ deployer_user }}
+          PasswordAuthentication no
+          KbdInteractiveAuthentication no
+          PubkeyAuthentication yes
+      Match all
+    validate: /usr/sbin/sshd -t -f %s
+  notify: Reload SSH
+
+- name: Install monitoring script
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../scripts/monitor.sh"
+    dest: /usr/local/bin/monitor.sh
+    mode: '0755'
