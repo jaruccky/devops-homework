@@ -10,7 +10,7 @@
 
 **Развёртывание на выданном сервере не выполнено:** SSH на `111.88.162.109:22` завершился таймаутом при повторных попытках. Поэтому результатов `terraform apply`, второго Ansible-запуска с `changed=0`, удалённого `docker compose ps` и HTTP `200 OK` пока нет. Их автоматически соберёт `scripts/deploy.sh`, когда сервер станет доступен.
 
-Код публикуется в [jaruccky/devops-homework](https://github.com/jaruccky/devops-homework), рабочая ветка — `feature/infra-setup`. PR/MR остаётся открытым до реальных проверок на сервере. Merge и тег `v0.1.0` выполняются после подтверждения развёртывания.
+Код опубликован в [jaruccky/devops-homework](https://github.com/jaruccky/devops-homework/tree/feature/infra-setup), рабочая ветка — `feature/infra-setup`. PR/MR остаётся открытым до реальных проверок на сервере. Merge и тег `v0.1.0` выполняются после подтверждения развёртывания.
 
 ## Работа прямо на сервере через git pull
 
@@ -216,22 +216,6 @@ git diff --check
 
 Само-ревью: [docs/self-review.md](docs/self-review.md). Готовое описание PR/MR: [docs/merge-request.md](docs/merge-request.md).
 
-После создания удалённого репозитория и восстановления авторизации:
-
-```bash
-git remote add origin <URL-репозитория>
-git push -u origin main
-git push -u origin feature/infra-setup
-gh pr create --base main --head feature/infra-setup \
-  --title 'DevOps HW1: Ansible, Terraform Docker and Compose' \
-  --body-file docs/merge-request.md
-# После успешного развёртывания, review и merge через GitHub/GitLab:
-git switch main
-git pull --ff-only
-git tag -a v0.1.0 -m "DevOps HW1: verified infrastructure"
-git push origin v0.1.0
-```
-
-Если удалённый `main` уже существует, сначала согласуйте историю; команды выше предназначены для пустого репозитория. На GitLab создайте MR из `feature/infra-setup` в `main`. После удалённого merge тег должен указывать на итоговый commit.
+GitHub-операции выполняет ассистент: публикует изменения в `feature/infra-setup`, ведёт PR в `main`, после успешных проверок оформляет merge и тег `v0.1.0`. Пользователь на сервере получает текущий код командой `git pull --ff-only` и запускает согласованные команды.
 
 Для сдачи нужны ссылка на репозиторий/PR и реальные результаты проверок на сервере. Пользователь выполняет команды через свою сессию, ассистент публикует исправления и оформляет итоговые материалы.
