@@ -8,7 +8,7 @@
 
 Код подготовлен; локально проверены синтаксис Ansible, Docker Compose, HCL Terraform и Bash. Десять тестов мониторинга проходят. Настоящий локальный запуск `monitor.sh docker` сохранён в `evidence/monitor-local.txt`.
 
-**Развёртывание на выданном сервере не выполнено:** SSH на `111.88.162.109:22` завершился таймаутом при повторных попытках. Поэтому результатов `terraform apply`, второго Ansible-запуска с `changed=0`, удалённого `docker compose ps` и HTTP `200 OK` пока нет. Их автоматически соберёт `scripts/deploy.sh`, когда сервер станет доступен.
+**Развёртывание на выданном сервере ещё не подтверждено:** прямой SSH из среды ассистента недоступен, пользователь выполняет команды в своей серверной сессии. Диагностика показала Ubuntu 24.04.4, Python 3.12.3, доступный sudo, свободные порты 80/8080 и отсутствие Docker, Ansible и Terraform. Следующий этап — Ansible через `scripts/setup_local.sh`. Успешные apply, changed=0, Compose и HTTP ещё требуют фактического запуска.
 
 Код опубликован в [jaruccky/devops-homework](https://github.com/jaruccky/devops-homework/tree/feature/infra-setup), рабочая ветка — `feature/infra-setup`. PR/MR остаётся открытым до реальных проверок на сервере. Merge и тег `v0.1.0` выполняются после подтверждения развёртывания.
 
@@ -33,6 +33,17 @@ bash scripts/server_info.sh
 ```bash
 git pull --ff-only
 ```
+
+На проверенном сервере Ubuntu 24.04 / Python 3.12 следующий шаг выполняется из каталога репозитория:
+
+```bash
+git pull --ff-only
+bash scripts/setup_local.sh
+```
+
+Запускайте скрипт от `student`, без `sudo` перед `bash`. Он устанавливает venv и Ansible, создаёт отдельный SSH-ключ `~/.ssh/devops_homework` для локального контроллера, запускает `setup_host.yml` дважды и требует `changed=0` во втором recap. Затем проверяет Docker и Compose от пользователя `deployer`. Ключ переиспользуется при повторных запусках; приватный ключ находится вне репозитория. Системные пакеты и SSH-конфигурация настраиваются через Ansible. Terraform и Compose-приложение запускаются следующим этапом.
+
+Логи Ansible сохраняются в `evidence/server/ansible-first.txt` и `evidence/server/ansible-second.txt`; PNG — в `evidence/server/screenshots/`. Каталог `evidence/server/` исключён из Git, поэтому последующие `git pull` не конфликтуют с результатами запусков. Успешный скрипт создаёт изображения фактических выводов. Для разбора ошибки пришлите последнюю задачу и блок `PLAY RECAP`.
 
 Для локального Ansible подготовлен `ansible/inventory.local.ini` с `ansible_connection=local`. После установки совместимой версии Ansible и подготовки SSH-ключа запуск выглядит так:
 
