@@ -1,0 +1,4 @@
+User-provided recap of the first setup_host.yml run; full first transcript was not supplied
+
+PLAY RECAP
+localhost : ok=20 changed=10 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0

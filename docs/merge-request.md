@@ -1,11 +1,7 @@
-Создаёт базовую инфраструктуру ДЗ №1 с учётом уточнения преподавателя: Ansible сначала готовит выданный Ubuntu-хост, затем Terraform Docker создаёт nginx на порту 8080 с отдельной сетью и томом. Docker Compose запускает reverse proxy на порту 80 и приложение Hello World в другой сети.
+Подготавливает выданный Ubuntu-сервер для контейнерного приложения с учётом уточнения преподавателя: сначала Ansible, затем Terraform Docker. Terraform создаёт nginx на порту 8080 с отдельной сетью и именованным томом; Compose разворачивает reverse proxy на порту 80 и app с Hello World в другой сети.
 
-Добавлены пользователь deployer с ключевым SSH-доступом, Docker Engine/Compose, автозапуск, Bash-мониторинг, инструкции и скрипт сбора результатов. Скрипт развёртывания требует changed=0 во втором Ansible recap, проверяет HTTP, сети, том и пустой повторный Terraform plan.
+Ansible устанавливает Docker/Compose, включает сервисы и создаёт deployer с ключевым доступом и sudo. Добавлены мониторинг, локальный inventory, зеркала Terraform, lock file для Docker provider 3.9.0, инструкции и сохранённые фактические результаты.
 
-Проверки: синтаксис обоих Ansible playbook, Compose config, Bash syntax, HCL parse и 10 тестов мониторинга. Локальный monitor.sh docker выполнен успешно.
+Проверки на сервере: второй Ansible changed=0/failed=0; Terraform validate успешен, apply создал 4 ресурса; все три контейнера healthy; PASS проверки сетей и тома; Docker active и 0 ошибок syslog за час. Ассистент по SSH подтвердил повторный Terraform plan: No changes, код 0. Оба публичных HTTP-порта также проверены извне: 200 OK, nginx welcome и Hello World.
 
-Развёртывание пока не подтверждено: прямой SSH из среды ассистента недоступен, команды выполняет пользователь на сервере. Диагностика подтвердила Ubuntu 24.04.4 / Python 3.12.3, sudo и свободные порты 80/8080; Docker, Ansible и Terraform ещё отсутствуют. Terraform validate/apply также не запускались из-за недоступности загрузки бинарника. Перед окончательной сдачей нужны фактические логи Ansible, Terraform, Compose и curl, которые сохранит scripts/deploy.sh. Само-ревью — docs/self-review.md.
-
-Для выполнения через серверную сессию добавлены локальный inventory Ansible, пример Terraform Unix socket и скрипт первичной диагностики. Пользователь получает исправления через git pull и передаёт фактические результаты выполнения.
-
-Добавлен setup_local.sh: установка локального контроллера, отдельный SSH-ключ, два Ansible-запуска с проверкой changed=0, проверки Docker/Compose от deployer и сохранение фактических логов.
+Локально проходят Bash/Ansible/Compose/HCL проверки и 10 тестов мониторинга. Само-ревью — docs/self-review.md; исходные транскрипты и PNG-представления результатов — evidence/ и screenshots/. Terraform state и учётные данные не публикуются.
