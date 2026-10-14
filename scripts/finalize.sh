@@ -6,6 +6,23 @@ cd "$root"
 repo=jaruccky/devops-homework
 branch=feature/infra-setup
 tag=v0.1.0
+
+# GitHub can update the PR head slightly later than the branch after a push.
+wait_for_pr_head() {
+    local expected=$1 actual attempt
+    for attempt in 1 2 3 4 5 6; do
+        actual=$(gh api "repos/$repo/pulls/1" --header 'Cache-Control: no-cache' --jq '.head.sha') || return 1
+        if [[ $actual == "$expected" ]]; then
+            return 0
+        fi
+        if (( attempt < 6 )); then
+            sleep 2
+        fi
+    done
+    printf 'Вершина PR не совпала после повторных проверок.\nВетка: %s\nPR: %s\n' "$expected" "$actual" >&2
+    return 1
+}
+
 mode=${1:-prepare}
 if (( $# > 1 )) || [[ $mode != prepare && $mode != --tag ]]; then
     echo 'Usage: bash scripts/finalize.sh [--tag]' >&2
@@ -50,10 +67,7 @@ if [[ $(gh api "repos/$repo/pulls/1" --jq '.state') != open ]]; then
 fi
 git push origin "refs/heads/$branch:refs/heads/$branch"
 head_sha=$(git rev-parse "$branch")
-if [[ $(gh api "repos/$repo/pulls/1" --jq '.head.sha') != "$head_sha" ]]; then
-    echo 'Вершина PR отличается от отправленной ветки. Проверь PR.' >&2
-    exit 1
-fi
+wait_for_pr_head "$head_sha"
 payload=$(mktemp)
 trap 'rm -f "$payload"' EXIT
 git show "$branch:docs/merge-request.md" | python3 -c 'import json,sys; json.dump({"body":sys.stdin.read()},sys.stdout)' > "$payload"
