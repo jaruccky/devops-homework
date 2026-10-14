@@ -1,0 +1,25 @@
+Actual connection failures observed on 2026-10-12:
+
+SSH to student@111.88.162.109 port 22, first attempt:
+Connection timed out during banner exchange
+Connection to 111.88.162.109 port 22 timed out
+
+SSH, second attempt:
+ssh: connect to host 111.88.162.109 port 22: Connection timed out
+
+Terraform binary download from releases.hashicorp.com:
+curl: (28) Failed to connect to releases.hashicorp.com port 443 after 14998 ms: Connection timed out
+
+Terraform binary download from hashicorp-releases.yandexcloud.net:
+curl: (28) Failed to connect to hashicorp-releases.yandexcloud.net port 443 after 9702 ms: Connection timed out
+
+GitHub CLI (including a check outside the sandbox):
+github.com: authentication failed.
+The github.com token in /home/jarussky/.config/gh/hosts.yml is no longer valid.
+
+Local Docker runtime access:
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+sudo: a password is required
+
+Not executed: remote Ansible setup/deploy, Terraform plan/apply/state, remote Compose ps,
+remote monitor, HTTP checks, GitHub repository/PR creation, final merge/tag.

@@ -1,0 +1,8 @@
+User-provided server console output
+
+NAME                 IMAGE               COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+devops-hw1-app-1     nginx:1.28-alpine   "/docker-entrypoint.…"   app       12 seconds ago   Up 10 seconds (healthy)   80/tcp
+devops-hw1-nginx-1   nginx:1.28-alpine   "/docker-entrypoint.…"   nginx     11 seconds ago   Up 5 seconds (healthy)    0.0.0.0:80->80/tcp
+NAME                 IMAGE               COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+devops-hw1-app-1     nginx:1.28-alpine   "/docker-entrypoint.…"   app       12 seconds ago   Up 10 seconds (healthy)   80/tcp
+devops-hw1-nginx-1   nginx:1.28-alpine   "/docker-entrypoint.…"   nginx     11 seconds ago   Up 5 seconds (healthy)    0.0.0.0:80->80/tcp

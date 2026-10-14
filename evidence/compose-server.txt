@@ -1,0 +1,52 @@
+User-provided server console output
+
+student@kireevdv:~/devops-homework/ansible$ ../.venv/bin/ansible-playbook -i inventory.local.ini deploy_app.yml -K && curl --fail -i http://127.0.0.1/ && sudo docker compose -f /opt/app/docker-compose.yml ps && sudo -H -u deployer bash -s < "$HOME/devops-homework/scripts/verify_remote.sh" && sudo /usr/local/bin/monitor.sh docker
+BECOME password:
+
+PLAY [Deploy the Compose environment] ***********************************************************************************************************************************************
+
+TASK [Gathering Facts] **************************************************************************************************************************************************************
+ok: [localhost]
+
+TASK [Create the application directory] *********************************************************************************************************************************************
+changed: [localhost]
+
+TASK [Copy the Compose project] *****************************************************************************************************************************************************
+changed: [localhost]
+
+TASK [Validate Compose configuration] ***********************************************************************************************************************************************
+ok: [localhost]
+
+TASK [Start the services and wait for health checks] ********************************************************************************************************************************
+changed: [localhost]
+
+PLAY RECAP **************************************************************************************************************************************************************************
+localhost                  : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+HTTP/1.1 200 OK
+Server: nginx/1.28.3
+Date: Wed, 14 Oct 2026 21:14:47 GMT
+Content-Type: text/html
+Content-Length: 141
+Connection: keep-alive
+Last-Modified: Wed, 14 Oct 2026 21:14:32 GMT
+ETag: "6acff0b8-8d"
+Accept-Ranges: bytes
+
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>DevOps Homework</title></head>
+<body><h1>Hello World</h1></body>
+</html>
+NAME                 IMAGE               COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+devops-hw1-app-1     nginx:1.28-alpine   "/docker-entrypoint.…"   app       12 seconds ago   Up 10 seconds (healthy)   80/tcp
+devops-hw1-nginx-1   nginx:1.28-alpine   "/docker-entrypoint.…"   nginx     11 seconds ago   Up 5 seconds (healthy)    0.0.0.0:80->80/tcp
+NAME                 IMAGE               COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+devops-hw1-app-1     nginx:1.28-alpine   "/docker-entrypoint.…"   app       12 seconds ago   Up 10 seconds (healthy)   80/tcp
+devops-hw1-nginx-1   nginx:1.28-alpine   "/docker-entrypoint.…"   nginx     11 seconds ago   Up 5 seconds (healthy)    0.0.0.0:80->80/tcp
+/devops-hw1-terraform-nginx: networks={"devops-hw1-terraform":{"IPAMConfig":{},"Links":null,"Aliases":[],"DriverOpts":null,"GwPriority":0,"NetworkID":"cae256990c5430778eeec989df6d452bd208872f83de100b5720666ce04fd3e8","EndpointID":"d2151313e4269cb9a317334b7ca7b6ac189d866b033ef6a67bde8c51db2a456f","Gateway":"172.18.0.1","IPAddress":"172.18.0.2","MacAddress":"92:74:12:d4:0b:5f","IPPrefixLen":16,"IPv6Gateway":"","GlobalIPv6Address":"","GlobalIPv6PrefixLen":0,"DNSNames":["devops-hw1-terraform-nginx","a418c67cc605"]}} mounts=[{"Type":"volume","Name":"devops-hw1-nginx-html","Source":"/var/lib/docker/volumes/devops-hw1-nginx-html/_data","Destination":"/usr/share/nginx/html","Driver":"local","Mode":"ro","RW":false,"Propagation":""}] health=healthy
+/devops-hw1-app-1: networks={"devops-hw1-compose":{"IPAMConfig":null,"Links":null,"Aliases":["devops-hw1-app-1","app"],"DriverOpts":null,"GwPriority":0,"NetworkID":"15188f243d085765d6628897300db442e865a20e9a96616ee9c6163a9d8957a6","EndpointID":"bba410c31d91fe846d1dcb47cd32968d2a874b440cb2e017fb7ee50631207dd3","Gateway":"172.19.0.1","IPAddress":"172.19.0.2","MacAddress":"0e:a7:5b:33:83:f1","IPPrefixLen":16,"IPv6Gateway":"","GlobalIPv6Address":"","GlobalIPv6PrefixLen":0,"DNSNames":["devops-hw1-app-1","app","68cfc3b963fc"]}} mounts=[{"Type":"bind","Source":"/opt/app/app/index.html","Destination":"/usr/share/nginx/html/index.html","Mode":"ro","RW":false,"Propagation":"rprivate"}] health=healthy
+/devops-hw1-nginx-1: networks={"devops-hw1-compose":{"IPAMConfig":null,"Links":null,"Aliases":["devops-hw1-nginx-1","nginx"],"DriverOpts":null,"GwPriority":0,"NetworkID":"15188f243d085765d6628897300db442e865a20e9a96616ee9c6163a9d8957a6","EndpointID":"97739668a996775ccfaa3388b9d01b23ee11621283770b8a8337a9e12771350d","Gateway":"172.19.0.1","IPAddress":"172.19.0.3","MacAddress":"1e:26:12:4a:a9:56","IPPrefixLen":16,"IPv6Gateway":"","GlobalIPv6Address":"","GlobalIPv6PrefixLen":0,"DNSNames":["devops-hw1-nginx-1","nginx","39575c9aa420"]}} mounts=[{"Type":"bind","Source":"/opt/app/nginx/default.conf","Destination":"/etc/nginx/conf.d/default.conf","Mode":"ro","RW":false,"Propagation":"rprivate"}] health=healthy
+PASS: services healthy, networks separated, named volume attached.
+Service docker: active
+Errors in /var/log/syslog during the last hour: 0

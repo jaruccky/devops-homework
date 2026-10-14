@@ -9,3 +9,5 @@ terraform.tfvars
 __pycache__/
 *.pem
 id_*
+.ansible/
+evidence/server/

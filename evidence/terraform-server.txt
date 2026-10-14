@@ -1,0 +1,198 @@
+User-provided server console output
+
+student@kireevdv:~/devops-homework$ ^C
+student@kireevdv:~/devops-homework$ bash <<'SCRIPT'
+set -e
+
+sudo install -o deployer -g deployer -m 0644 \
+  "$HOME/devops-homework/terraform/terraform.local.tfvars.example" \
+  /opt/devops-hw1-terraform/terraform.tfvars
+
+tf() {
+  sudo -H -u deployer env \
+    TF_CLI_CONFIG_FILE=/opt/devops-hw1-terraform/terraform.rc \
+    terraform -chdir=/opt/devops-hw1-terraform "$@"
+}
+
+tf validate
+tf plan -out=homework.tfplan
+tf apply homework.tfplan
+tf state list
+
+curl --fail --retry 5 --retry-connrefused --retry-delay 1 \
+SCRIPTttp://127.0.0.1:8080/
+Success! The configuration is valid.
+
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # docker_container.nginx will be created
+  + resource "docker_container" "nginx" {
+      + attach                                      = false
+      + bridge                                      = (known after apply)
+      + command                                     = (known after apply)
+      + container_logs                              = (known after apply)
+      + container_read_refresh_timeout_milliseconds = 15000
+      + entrypoint                                  = (known after apply)
+      + env                                         = (known after apply)
+      + exit_code                                   = (known after apply)
+      + hostname                                    = (known after apply)
+      + id                                          = (known after apply)
+      + image                                       = (known after apply)
+      + init                                        = (known after apply)
+      + ipc_mode                                    = (known after apply)
+      + log_driver                                  = (known after apply)
+      + logs                                        = false
+      + memory_reservation                          = 0
+      + must_run                                    = true
+      + name                                        = "devops-hw1-terraform-nginx"
+      + network_data                                = (known after apply)
+      + network_mode                                = "bridge"
+      + read_only                                   = false
+      + remove_volumes                              = true
+      + restart                                     = "unless-stopped"
+      + rm                                          = false
+      + runtime                                     = (known after apply)
+      + security_opts                               = (known after apply)
+      + shm_size                                    = (known after apply)
+      + start                                       = true
+      + stdin_open                                  = false
+      + stop_signal                                 = (known after apply)
+      + stop_timeout                                = (known after apply)
+      + tty                                         = false
+      + wait                                        = false
+      + wait_timeout                                = 60
+
+      + healthcheck {
+          + interval       = "10s"
+          + retries        = 3
+          + start_interval = "0s"
+          + start_period   = "5s"
+          + test           = [
+              + "CMD-SHELL",
+              + "wget -q -O /dev/null http://127.0.0.1/ || exit 1",
+            ]
+          + timeout        = "3s"
+        }
+
+      + labels (known after apply)
+
+      + networks_advanced {
+          + aliases      = []
+          + name         = "devops-hw1-terraform"
+            # (3 unchanged attributes hidden)
+        }
+
+      + ports {
+          + external = 8080
+          + internal = 80
+          + ip       = "0.0.0.0"
+          + protocol = "tcp"
+        }
+
+      + volumes {
+          + container_path = "/usr/share/nginx/html"
+          + read_only      = true
+          + volume_name    = "devops-hw1-nginx-html"
+            # (2 unchanged attributes hidden)
+        }
+    }
+
+  # docker_image.nginx will be created
+  + resource "docker_image" "nginx" {
+      + id           = (known after apply)
+      + image_id     = (known after apply)
+      + keep_locally = true
+      + name         = "nginx:1.28-alpine"
+      + repo_digest  = (known after apply)
+    }
+
+  # docker_network.nginx will be created
+  + resource "docker_network" "nginx" {
+      + driver      = "bridge"
+      + id          = (known after apply)
+      + internal    = (known after apply)
+      + ipam_driver = "default"
+      + name        = "devops-hw1-terraform"
+      + options     = (known after apply)
+      + scope       = (known after apply)
+
+      + ipam_config (known after apply)
+    }
+
+  # docker_volume.nginx_html will be created
+  + resource "docker_volume" "nginx_html" {
+      + driver     = (known after apply)
+      + id         = (known after apply)
+      + mountpoint = (known after apply)
+      + name       = "devops-hw1-nginx-html"
+    }
+
+Plan: 4 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + network_name = "devops-hw1-terraform"
+  + nginx_url    = "http://111.88.162.109:8080"
+  + volume_name  = "devops-hw1-nginx-html"
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Saved the plan to: homework.tfplan
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "homework.tfplan"
+docker_image.nginx: Creating...
+docker_volume.nginx_html: Creating...
+docker_network.nginx: Creating...
+docker_volume.nginx_html: Creation complete after 0s [id=devops-hw1-nginx-html]
+docker_network.nginx: Creation complete after 2s [id=cae256990c5430778eeec989df6d452bd208872f83de100b5720666ce04fd3e8]
+docker_image.nginx: Creation complete after 6s [id=sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236nginx:1.28-alpine]
+docker_container.nginx: Creating...
+docker_container.nginx: Creation complete after 2s [id=a418c67cc605b23435d18b0fb0f29c41b90143eaa350a541723b3c8834a88ffc]
+
+Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+network_name = "devops-hw1-terraform"
+nginx_url = "http://111.88.162.109:8080"
+volume_name = "devops-hw1-nginx-html"
+docker_container.nginx
+docker_image.nginx
+docker_network.nginx
+docker_volume.nginx_html
+HTTP/1.1 200 OK
+Server: nginx/1.28.3
+Date: Wed, 14 Oct 2026 21:00:08 GMT
+Content-Type: text/html
+Content-Length: 615
+Last-Modified: Tue, 24 Mar 2026 19:45:11 GMT
+Connection: keep-alive
+ETag: "69c2e9c7-267"
+Accept-Ranges: bytes
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>

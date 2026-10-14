@@ -1,0 +1,6 @@
+User-provided server console output
+
+docker_container.nginx
+docker_image.nginx
+docker_network.nginx
+docker_volume.nginx_html

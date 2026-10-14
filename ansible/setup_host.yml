@@ -1,0 +1,9 @@
+---
+- name: Configure the Docker host
+  hosts: devops
+  become: true
+  vars:
+    deployer_user: deployer
+    deployer_public_key_file: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
+  roles:
+    - host_setup

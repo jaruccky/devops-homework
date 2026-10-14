@@ -1,0 +1,4 @@
+User-provided server console output
+
+Service docker: active
+Errors in /var/log/syslog during the last hour: 0

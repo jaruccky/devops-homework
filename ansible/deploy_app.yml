@@ -1,0 +1,39 @@
+---
+- name: Deploy the Compose environment
+  hosts: devops
+  become: true
+  vars:
+    app_path: /opt/app
+  tasks:
+    - name: Create the application directory
+      ansible.builtin.file:
+        path: "{{ app_path }}"
+        state: directory
+        owner: deployer
+        group: deployer
+        mode: '0755'
+
+    - name: Copy the Compose project
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../compose/"
+        dest: "{{ app_path }}/"
+        owner: deployer
+        group: deployer
+        mode: preserve
+
+    - name: Validate Compose configuration
+      ansible.builtin.command: docker compose config --quiet
+      args:
+        chdir: "{{ app_path }}"
+      changed_when: false
+
+    - name: Start the services and wait for health checks
+      ansible.builtin.command: docker compose up -d --wait --wait-timeout 120
+      args:
+        chdir: "{{ app_path }}"
+      register: compose_result
+      changed_when: >-
+        'Creating' in compose_result.stderr or
+        'Created' in compose_result.stderr or
+        'Recreate' in compose_result.stderr or
+        'Starting' in compose_result.stderr

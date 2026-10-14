@@ -1,0 +1,4 @@
+# Copy to terraform.tfvars when running Terraform directly on the Docker server.
+docker_host = "unix:///var/run/docker.sock"
+server_ip   = "111.88.162.109"
+http_port   = 8080

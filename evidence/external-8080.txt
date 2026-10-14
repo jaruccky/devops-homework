@@ -1,0 +1,14 @@
+Source: excerpt from the assistant's earlier successful external HTTP check.
+Command: curl --fail -i http://111.88.162.109:8080/
+
+HTTP/1.1 200 OK
+Server: nginx/1.28.3
+Date: Wed, 14 Oct 2026 21:32:24 GMT
+Content-Type: text/html
+Content-Length: 615
+Connection: keep-alive
+
+Body excerpt:
+<h1>Welcome to nginx!</h1>
+
+A later HTTP retry timed out; this excerpt records the earlier successful check.
