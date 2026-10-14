@@ -1,7 +1,7 @@
 User-provided server console output
 
 student@kireevdv:~/devops-homework/ansible$ ../.venv/bin/ansible-playbook -i inventory.local.ini deploy_app.yml -K && curl --fail -i http://127.0.0.1/ && sudo docker compose -f /opt/app/docker-compose.yml ps && sudo -H -u deployer bash -s < "$HOME/devops-homework/scripts/verify_remote.sh" && sudo /usr/local/bin/monitor.sh docker
-BECOME password: 
+BECOME password:
 
 PLAY [Deploy the Compose environment] ***********************************************************************************************************************************************
 
@@ -21,7 +21,7 @@ TASK [Start the services and wait for health checks] ***************************
 changed: [localhost]
 
 PLAY RECAP **************************************************************************************************************************************************************************
-localhost                  : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+localhost                  : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 
 HTTP/1.1 200 OK
 Server: nginx/1.28.3
