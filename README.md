@@ -1,6 +1,6 @@
-# ДЗ №1: фундамент DevOps-инфраструктуры
+# Ansible, Terraform и Docker
 
-Киреев Дмитрий Владимирович, `kireevdv`. Ubuntu 24.04.4, сервер `111.88.162.109`.
+Автоматизация настройки Ubuntu-сервера и развёртывания nginx и веб-приложения.
 
 Порядок настройки: **Ansible → Terraform → Docker Compose**.
 
@@ -22,11 +22,11 @@ flowchart LR
     end
 ```
 
-Сети разделены согласно уточнению задания. App доступен только через proxy; именованный том сохраняет страницу Terraform nginx при пересоздании контейнера. Используется выданный сервер.
+Terraform nginx и Compose работают в отдельных сетях. App доступен только через proxy; именованный том сохраняет страницу Terraform nginx при пересоздании контейнера.
 
 ## Запуск
 
-Команды выполняются на сервере от `student` с sudo:
+Команды выполняются на сервере от пользователя с sudo:
 
 ```bash
 git clone https://github.com/jaruccky/devops-homework.git
@@ -58,5 +58,3 @@ PNG содержат сохранённые выводы команд. Полн�
 - `evidence/`, `screenshots/` — результаты проверок.
 
 Terraform state хранится на сервере в `/opt/devops-hw1-terraform/`, команды Terraform выполняются от `deployer`. State, пароли и приватные ключи исключены из Git.
-
-[PR #1](https://github.com/jaruccky/devops-homework/pull/1) · [Само-ревью](docs/self-review.md)
