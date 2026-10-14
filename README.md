@@ -8,7 +8,7 @@
 
 Код подготовлен; локально проверены синтаксис Ansible, Docker Compose, HCL Terraform и Bash. Десять тестов мониторинга проходят. Настоящий локальный запуск `monitor.sh docker` сохранён в `evidence/monitor-local.txt`.
 
-**Развёртывание на выданном сервере ещё не подтверждено:** прямой SSH из среды ассистента недоступен, пользователь выполняет команды в своей серверной сессии. Диагностика показала Ubuntu 24.04.4, Python 3.12.3, доступный sudo, свободные порты 80/8080 и отсутствие Docker, Ansible и Terraform. Следующий этап — Ansible через `scripts/setup_local.sh`. Успешные apply, changed=0, Compose и HTTP ещё требуют фактического запуска.
+**Развёртывание на выданном сервере ещё не подтверждено:** прямой SSH из среды ассистента недоступен, пользователь выполняет команды в своей серверной сессии. Первоначальная диагностика показала Ubuntu 24.04.4 и Python 3.12.3. Пользователь подтвердил успешную настройку Ansible: первый запуск ok=20/changed=10, второй ok=18/changed=0, ошибок нет. Terraform 1.13.3 установлен из зеркала Yandex Cloud. Первый init остановился на недоступности registry.terraform.io; подготовлена настройка зеркала провайдеров. Apply, Compose и HTTP ещё не подтверждены.
 
 Код опубликован в [jaruccky/devops-homework](https://github.com/jaruccky/devops-homework/tree/feature/infra-setup), рабочая ветка — `feature/infra-setup`. PR/MR остаётся открытым до реальных проверок на сервере. Merge и тег `v0.1.0` выполняются после подтверждения развёртывания.
 
@@ -51,6 +51,15 @@ bash scripts/setup_local.sh
 cd ansible
 ../.venv/bin/ansible-playbook -i inventory.local.ini setup_host.yml -K
 ```
+
+Если `terraform init` сообщает `Invalid provider registry host`, настройте зеркало провайдеров для пользователя, запускающего Terraform. В текущем серверном режиме это `deployer`:
+
+```bash
+sudo install -o deployer -g deployer -m 0644 terraform/terraformrc.mirror.example /home/deployer/.terraformrc
+sudo -H -u deployer terraform -chdir=/opt/devops-hw1-terraform init
+```
+
+Зеркало `terraform-mirror.yandexcloud.net` содержит `kreuzwerker/docker` версий 3.6–3.9. Адрес провайдера в `versions.tf` остаётся `kreuzwerker/docker`; меняется способ скачивания пакета. Пример конфигурации основан на [документации Yandex Cloud](https://yandex.cloud/en/docs/ydb/terraform/install).
 
 Для Terraform на этом же сервере используется пример `terraform/terraform.local.tfvars.example` с `unix:///var/run/docker.sock`. Terraform необходимо запускать от пользователя с доступом к Docker-сокету. Удалённый `scripts/deploy.sh` рассчитан на рабочую машину, подключающуюся по SSH; команды локального развёртывания выдаются отдельно после диагностики.
 
